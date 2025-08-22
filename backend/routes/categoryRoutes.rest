@@ -1,0 +1,26 @@
+### Create new category (POST)
+POST http://localhost:5000/api/categories
+Content-Type: application/json
+
+{
+  "name": "Smartphones",
+  "description": "Mobile devices"
+}
+
+### Get all categories (GET)
+GET http://localhost:5000/api/categories
+
+###Get category by ID (GET)
+GET http://localhost:5000/api/categories/5
+
+###Update category (PUT)
+PUT http://localhost:5000/api/categories/5
+Content-Type: application/json
+
+{
+  "name": "Smartphones Updated",
+  "description": "Updated description"
+}
+
+###Delete category (DELETE)
+DELETE http://localhost:5000/api/categories/3
