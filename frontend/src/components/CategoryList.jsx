@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const CategoryList = ({ onSelect }) => {
+const CategoryList = ({ onSelect , refreshToggle }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [refreshToggle]);
 
   const fetchCategories = async () => {
     try {
