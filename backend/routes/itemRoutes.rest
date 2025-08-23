@@ -35,3 +35,11 @@ Content-Type: application/json
 
 ###Delete item (DELETE)
 DELETE http://localhost:5000/api/items/1
+
+###
+POST http://localhost:5000/api/verify-admin/
+Content-Type: application/json
+
+{
+  "password": "pratik123"
+}

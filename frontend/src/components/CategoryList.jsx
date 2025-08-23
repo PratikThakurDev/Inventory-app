@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ADMIN_PASSWORD } from "../config";
 
 const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
   const [categories, setCategories] = useState([]);
@@ -32,17 +31,40 @@ const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
     }
   };
 
-  const verifyPassword = () => {
+  const verifyPassword = async () => {
     const entered = window.prompt("Enter admin password:");
-    if (entered !== ADMIN_PASSWORD) {
-      alert("Incorrect password. Action cancelled.");
+    if (!entered) return false;
+
+    const trimmedPassword = entered.trim();
+    if (!trimmedPassword) {
+      alert("Password required.");
       return false;
     }
-    return true;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/verify-admin",
+        {
+          password: trimmedPassword,
+        }
+      );
+      if (res.data.success) {
+        return true;
+      } else {
+        alert("Incorrect password. Action cancelled.");
+        return false;
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Verification failed. Please try again later."
+      );
+      return false;
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!verifyPassword()) return;
+    if (!(await verifyPassword())) return; // Await here
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
         await axios.delete(`http://localhost:5000/api/categories/${id}`);
@@ -54,8 +76,8 @@ const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
     }
   };
 
-  const handleEdit = (category) => {
-    if (!verifyPassword()) return;
+  const handleEdit = async (category) => {
+    if (!(await verifyPassword())) return; // Await here too
     onEdit(category);
   };
 
