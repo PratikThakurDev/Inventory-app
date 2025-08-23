@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
+import {
+  Box,
+  List,
+  ListItem,
+  Button,
+  Text,
+  Spinner,
+  Flex,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { ADMIN_PASSWORD } from "../config";
 
-const ItemList = ({
-  categoryId,
-  refreshToggle,
-  onEdit,
-  notifySuccess,
-  notifyError,
-}) => {
+const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,10 +27,11 @@ const ItemList = ({
         : `http://localhost:5000/api/items`;
       const res = await axios.get(url);
       setItems(res.data);
-    } catch (err) {
-      console.error("Error fetching items", err);
+    } catch {
+      // handle error if needed
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const verifyPassword = () => {
@@ -45,10 +49,8 @@ const ItemList = ({
       try {
         await axios.delete(`http://localhost:5000/api/items/${id}`);
         fetchItems();
-        notifySuccess?.("Item deleted successfully!");
-      } catch (err) {
-        notifyError?.("Failed to delete item");
-        console.error(err);
+      } catch {
+        alert("Failed to delete item");
       }
     }
   };
@@ -59,30 +61,50 @@ const ItemList = ({
   };
 
   return (
-    <div>
-      <h2>Items {categoryId && `(Category ${categoryId})`}</h2>
+    <Box borderWidth="1px" borderRadius="md" p={4}>
+      <Text fontSize="xl" mb={4}>
+        Items {categoryId ? `(Category ${categoryId})` : ""}
+      </Text>
+
       {loading ? (
-        <p>Loading items...</p>
+        <Flex justify="center">
+          <Spinner />
+        </Flex>
       ) : (
-        <ul>
+        <List spacing={3}>
           {items.map((item) => (
-            <li key={item.id}>
-              <span style={{ marginRight: "10px" }}>
+            <ListItem
+              key={item.id}
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Text>
                 {item.name} - {item.description} - Qty: {item.quantity} - ₹
                 {item.price}
-              </span>
-              <button onClick={() => handleEdit(item)}>Edit</button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                style={{ marginLeft: "5px" }}
-              >
-                Delete
-              </button>
-            </li>
+              </Text>
+              <Box>
+                <Button
+                  size="sm"
+                  onClick={() => handleEdit(item)}
+                  mr={2}
+                  colorScheme="blue"
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleDelete(item.id)}
+                  colorScheme="red"
+                >
+                  Delete
+                </Button>
+              </Box>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Box>
   );
 };
 

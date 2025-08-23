@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
+import {
+  Box,
+  List,
+  ListItem,
+  Button,
+  Text,
+  Spinner,
+  Flex,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { ADMIN_PASSWORD } from "../config";
 
-const CategoryList = ({
-  onSelect,
-  refreshToggle,
-  onEdit,
-  notifySuccess,
-  notifyError,
-}) => {
+const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -21,10 +24,11 @@ const CategoryList = ({
     try {
       const res = await axios.get("http://localhost:5000/api/categories");
       setCategories(res.data);
-    } catch (err) {
-      console.error("Error fetching categories", err);
+    } catch {
+      // handle error
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const verifyPassword = () => {
@@ -42,10 +46,8 @@ const CategoryList = ({
       try {
         await axios.delete(`http://localhost:5000/api/categories/${id}`);
         fetchCategories();
-        notifySuccess?.("Category deleted successfully!");
-      } catch (err) {
-        notifyError?.("Failed to delete category");
-        console.error(err);
+      } catch {
+        alert("Failed to delete category");
       }
     }
   };
@@ -56,32 +58,48 @@ const CategoryList = ({
   };
 
   return (
-    <div>
-      <h2>Categories</h2>
+    <Box borderWidth="1px" borderRadius="md" p={4}>
+      <Text fontSize="xl" mb={4}>
+        Categories
+      </Text>
       {loading ? (
-        <p>Loading categories...</p>
+        <Flex justify="center">
+          <Spinner />
+        </Flex>
       ) : (
-        <ul>
+        <List spacing={3}>
           {categories.map((cat) => (
-            <li key={cat.id}>
-              <span
-                onClick={() => onSelect(cat.id)}
-                style={{ cursor: "pointer", marginRight: "10px" }}
-              >
+            <ListItem
+              key={cat.id}
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Text cursor="pointer" onClick={() => onSelect(cat.id)}>
                 {cat.name} - {cat.description}
-              </span>
-              <button onClick={() => handleEdit(cat)}>Edit</button>
-              <button
-                onClick={() => handleDelete(cat.id)}
-                style={{ marginLeft: "5px" }}
-              >
-                Delete
-              </button>
-            </li>
+              </Text>
+              <Box>
+                <Button
+                  size="sm"
+                  onClick={() => handleEdit(cat)}
+                  mr={2}
+                  colorScheme="blue"
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleDelete(cat.id)}
+                  colorScheme="red"
+                >
+                  Delete
+                </Button>
+              </Box>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Box>
   );
 };
 

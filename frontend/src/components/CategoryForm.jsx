@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from "react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Text,
+} from "@chakra-ui/react";
 import axios from "axios";
 
 const CategoryForm = ({ category, onSuccess, onCancel }) => {
@@ -34,45 +42,53 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
           description,
         });
       }
+      if (onSuccess) onSuccess();
       setName("");
       setDescription("");
-      if (onSuccess) onSuccess();
-    } catch (err) {
+    } catch {
       setError("Failed to save category");
-      console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>{category ? "Edit Category" : "Add Category"}</h3>
-      <div>
-        <label>Name:</label>
-        <input
-          value={name}
-          required
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Description:</label>
-        <input
+    <Box
+      as="form"
+      p={4}
+      borderWidth="1px"
+      borderRadius="md"
+      onSubmit={handleSubmit}
+    >
+      <FormControl mb={4} isRequired>
+        <FormLabel>Name</FormLabel>
+        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>Description</FormLabel>
+        <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-      </div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <button type="submit" disabled={submitting}>
-        {submitting ? "Saving..." : category ? "Update" : "Add"}
-      </button>
-      {category && (
-        <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>
-          Cancel
-        </button>
+      </FormControl>
+
+      {error && (
+        <Text color="red.500" mb={4}>
+          {error}
+        </Text>
       )}
-    </form>
+
+      <Button type="submit" colorScheme="teal" isLoading={submitting}>
+        {category ? "Update" : "Add"}
+      </Button>
+
+      {category && (
+        <Button onClick={onCancel} ml={4}>
+          Cancel
+        </Button>
+      )}
+    </Box>
   );
 };
 

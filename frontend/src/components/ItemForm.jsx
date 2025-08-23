@@ -1,4 +1,18 @@
 import React, { useState, useEffect } from "react";
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Button,
+  Text,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from "@chakra-ui/react";
 import axios from "axios";
 
 const ItemForm = ({ item, onSuccess, onCancel }) => {
@@ -76,82 +90,102 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         setCategoryId("");
         setImageUrl("");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to save item");
-      console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>{item ? "Edit Item" : "Add Item"}</h3>
-      <div>
-        <label>Name:</label>
-        <input
-          value={name}
-          required
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Description:</label>
-        <input
+    <Box
+      as="form"
+      p={4}
+      mb={6}
+      borderWidth="1px"
+      borderRadius="md"
+      onSubmit={handleSubmit}
+    >
+      <FormControl mb={3} isRequired>
+        <FormLabel>Name</FormLabel>
+        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      </FormControl>
+
+      <FormControl mb={3}>
+        <FormLabel>Description</FormLabel>
+        <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Quantity:</label>
-        <input
-          type="number"
-          min="1"
+      </FormControl>
+
+      <FormControl mb={3} isRequired>
+        <FormLabel>Quantity</FormLabel>
+        <NumberInput
+          min={1}
           value={quantity}
-          required
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Price:</label>
-        <input
-          type="number"
-          min="0"
-          step="0.01"
+          onChange={(valueString) => setQuantity(valueString)}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </FormControl>
+
+      <FormControl mb={3} isRequired>
+        <FormLabel>Price</FormLabel>
+        <NumberInput
+          min={0}
+          precision={2}
           value={price}
-          required
-          onChange={(e) => setPrice(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Category:</label>
-        <select
+          onChange={(valueString) => setPrice(valueString)}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </FormControl>
+
+      <FormControl mb={3} isRequired>
+        <FormLabel>Category</FormLabel>
+        <Select
+          placeholder="Select category"
           value={categoryId}
-          required
           onChange={(e) => setCategoryId(e.target.value)}
         >
-          <option value="">Select...</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>
           ))}
-        </select>
-      </div>
-      <div>
-        <label>Image URL:</label>
-        <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-      </div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <button type="submit" disabled={submitting}>
-        {submitting ? "Saving..." : item ? "Update" : "Add"}
-      </button>
-      {item && (
-        <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>
-          Cancel
-        </button>
+        </Select>
+      </FormControl>
+
+      <FormControl mb={3}>
+        <FormLabel>Image URL</FormLabel>
+        <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+      </FormControl>
+
+      {error && (
+        <Text color="red.500" mb={3}>
+          {error}
+        </Text>
       )}
-    </form>
+
+      <Button type="submit" colorScheme="teal" isLoading={submitting}>
+        {item ? "Update" : "Add"}
+      </Button>
+
+      {item && (
+        <Button ml={3} onClick={onCancel} variant="outline">
+          Cancel
+        </Button>
+      )}
+    </Box>
   );
 };
 
