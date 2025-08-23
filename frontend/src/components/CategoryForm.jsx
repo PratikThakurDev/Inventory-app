@@ -5,6 +5,7 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (category) {
@@ -19,16 +20,15 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSubmitting(true);
 
     try {
       if (category) {
-        // Update existing
         await axios.put(`http://localhost:5000/api/categories/${category.id}`, {
           name,
           description,
         });
       } else {
-        // Create new
         await axios.post("http://localhost:5000/api/categories", {
           name,
           description,
@@ -40,6 +40,8 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
     } catch (err) {
       setError("Failed to save category");
       console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -62,7 +64,9 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
         />
       </div>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <button type="submit">{category ? "Update" : "Add"}</button>
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Saving..." : category ? "Update" : "Add"}
+      </button>
       {category && (
         <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>
           Cancel

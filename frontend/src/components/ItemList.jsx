@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { ADMIN_PASSWORD } from "../config";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { ADMIN_PASSWORD } from '../config';
 
 const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchItems();
   }, [refreshToggle, categoryId]);
 
   const fetchItems = async () => {
+    setLoading(true);
     try {
       const url = categoryId
         ? `http://localhost:5000/api/items/category/${categoryId}`
@@ -17,14 +19,15 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
       const res = await axios.get(url);
       setItems(res.data);
     } catch (err) {
-      console.error("Error fetching items", err);
+      console.error('Error fetching items', err);
     }
+    setLoading(false);
   };
 
   const verifyPassword = () => {
-    const entered = window.prompt("Enter admin password:");
+    const entered = window.prompt('Enter admin password:');
     if (entered !== ADMIN_PASSWORD) {
-      alert("Incorrect password. Action cancelled.");
+      alert('Incorrect password. Action cancelled.');
       return false;
     }
     return true;
@@ -32,12 +35,12 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
 
   const handleDelete = async (id) => {
     if (!verifyPassword()) return;
-    if (window.confirm("Are you sure you want to delete this item?")) {
+    if (window.confirm('Are you sure you want to delete this item?')) {
       try {
         await axios.delete(`http://localhost:5000/api/items/${id}`);
         fetchItems();
       } catch (err) {
-        alert("Failed to delete item");
+        alert('Failed to delete item');
         console.error(err);
       }
     }
@@ -51,23 +54,21 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
   return (
     <div>
       <h2>Items {categoryId && `(Category ${categoryId})`}</h2>
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <span style={{ marginRight: "10px" }}>
-              {item.name} - {item.description} - Qty: {item.quantity} - ₹
-              {item.price}
-            </span>
-            <button onClick={() => handleEdit(item)}>Edit</button>
-            <button
-              onClick={() => handleDelete(item.id)}
-              style={{ marginLeft: "5px" }}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <p>Loading items...</p>
+      ) : (
+        <ul>
+          {items.map(item => (
+            <li key={item.id}>
+              <span style={{ marginRight: '10px' }}>
+                {item.name} - {item.description} - Qty: {item.quantity} - ₹{item.price}
+              </span>
+              <button onClick={() => handleEdit(item)}>Edit</button>
+              <button onClick={() => handleDelete(item.id)} style={{ marginLeft: '5px' }}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

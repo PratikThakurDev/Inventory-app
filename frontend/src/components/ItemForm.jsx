@@ -10,6 +10,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -44,6 +45,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSubmitting(true);
 
     try {
       if (item) {
@@ -66,7 +68,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         });
       }
       if (onSuccess) onSuccess();
-      // Clear form after submit
       if (!item) {
         setName("");
         setDescription("");
@@ -78,6 +79,8 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
     } catch (err) {
       setError("Failed to save item");
       console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -140,7 +143,9 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
       </div>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <button type="submit">{item ? "Update" : "Add"}</button>
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Saving..." : item ? "Update" : "Add"}
+      </button>
       {item && (
         <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>
           Cancel
