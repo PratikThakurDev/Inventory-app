@@ -9,6 +9,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
 
 const SearchTab = ({ onSelectCategory }) => {
   const [items, setItems] = useState([]);
@@ -21,7 +22,7 @@ const SearchTab = ({ onSelectCategory }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axios.get(`${API_BASE_URL}/categories`);
         setCategories(res.data);
       } catch {
         setCategories([]);
@@ -35,9 +36,9 @@ const SearchTab = ({ onSelectCategory }) => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        let url = "http://localhost:5000/api/items";
+        let url = `${API_BASE_URL}/items`;
         if (filterCategory) {
-          url = `http://localhost:5000/api/items/category/${filterCategory}`;
+          url = `${API_BASE_URL}/items/category/${filterCategory}`;
         }
         const res = await axios.get(url);
         // further filter results by search text client-side
