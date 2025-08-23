@@ -11,6 +11,9 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
+
+
 const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,8 +26,8 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
     setLoading(true);
     try {
       const url = categoryId
-        ? `http://localhost:5000/api/items/category/${categoryId}`
-        : `http://localhost:5000/api/items`;
+        ? `${API_BASE_URL}/items/category/${categoryId}`
+        : `${API_BASE_URL}/items`;
       const res = await axios.get(url);
       setItems(res.data);
     } catch {
@@ -45,7 +48,7 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/verify-admin", {
+      const res = await axios.post(`${API_BASE_URL}/verify-admin`, {
         password: trimmedPassword,
       });
       if (res.data.success) {
@@ -67,7 +70,7 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
     if (!(await verifyPassword())) return;
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/items/${id}`);
+        await axios.delete(`${API_BASE_URL}/items/${id}`);
         fetchItems();
         toast.success("Item deleted!");
       } catch {

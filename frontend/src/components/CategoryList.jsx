@@ -11,6 +11,9 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
+
+
 const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -43,7 +46,7 @@ const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/verify-admin",
+        `${API_BASE_URL}/verify-admin`,
         {
           password: trimmedPassword,
         }
@@ -67,7 +70,7 @@ const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
     if (!(await verifyPassword())) return; // Await here
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/categories/${id}`);
+        await axios.delete(`${API_BASE_URL}/categories/${id}`);
         fetchCategories();
         toast.success("Category deleted successfully!");
       } catch {
