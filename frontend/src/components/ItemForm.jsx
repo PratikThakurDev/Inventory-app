@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ItemForm = ({ onSuccess }) => {
+const ItemForm = ({ onSuccess , refreshToggle }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -22,7 +22,7 @@ const ItemForm = ({ onSuccess }) => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [refreshToggle , categoryId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
