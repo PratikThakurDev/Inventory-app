@@ -80,8 +80,9 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
+              gap={4} // add some gap between image and text
             >
-              <Text>
+              <Text flex="1">
                 {item.name} - {item.description} - Qty: {item.quantity} - ₹
                 {item.price}
               </Text>

@@ -22,7 +22,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -47,14 +46,12 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
       setQuantity(item.quantity);
       setPrice(item.price);
       setCategoryId(item.category_id);
-      setImageUrl(item.image_url || "");
     } else {
       setName("");
       setDescription("");
       setQuantity(1);
       setPrice("");
       setCategoryId("");
-      setImageUrl("");
     }
   }, [item]);
 
@@ -71,7 +68,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
           quantity: Number(quantity),
           price: Number(price),
           category_id: Number(categoryId),
-          image_url: imageUrl,
         });
         toast.success("Item updated!");
       } else {
@@ -81,7 +77,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
           quantity: Number(quantity),
           price: Number(price),
           category_id: Number(categoryId),
-          image_url: imageUrl,
         });
         toast.success("Item added!");
       }
@@ -92,7 +87,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         setQuantity(1);
         setPrice("");
         setCategoryId("");
-        setImageUrl("");
       }
     } catch {
       toast.error("Failed to save item");
@@ -159,11 +153,6 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
             </option>
           ))}
         </Select>
-      </FormControl>
-
-      <FormControl mb={3}>
-        <FormLabel>Image URL</FormLabel>
-        <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
       </FormControl>
 
       {error && (
