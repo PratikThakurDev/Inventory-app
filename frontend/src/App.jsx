@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import CategoryForm from "./components/CategoryForm";
 import CategoryList from "./components/CategoryList";
 import ItemForm from "./components/ItemForm";
@@ -23,30 +26,53 @@ function App() {
     setItemToEdit(null);
   };
 
+  // Notification helpers
+  const notifySuccess = (message) => toast.success(message);
+  const notifyError = (message) => toast.error(message);
+
   return (
     <div className="App">
       <h1>Inventory App</h1>
+
       <CategoryForm
         category={categoryToEdit}
-        onSuccess={refreshCategoryList}
+        onSuccess={() => {
+          refreshCategoryList();
+          notifySuccess("Category saved successfully!");
+        }}
         onCancel={() => setCategoryToEdit(null)}
       />
       <CategoryList
         onSelect={handleCategorySelect}
         refreshToggle={refreshCategories}
-        onEdit={setCategoryToEdit}
+        onEdit={(cat) => {
+          setCategoryToEdit(cat);
+          notifySuccess("Editing category");
+        }}
+        notifySuccess={notifySuccess}
+        notifyError={notifyError}
       />
 
       <ItemForm
         item={itemToEdit}
-        onSuccess={refreshItemList}
+        onSuccess={() => {
+          refreshItemList();
+          notifySuccess("Item saved successfully!");
+        }}
         onCancel={() => setItemToEdit(null)}
       />
       <ItemList
         categoryId={selectedCategory}
         refreshToggle={refreshItems}
-        onEdit={setItemToEdit}
+        onEdit={(item) => {
+          setItemToEdit(item);
+          notifySuccess("Editing item");
+        }}
+        notifySuccess={notifySuccess}
+        notifyError={notifyError}
       />
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }
