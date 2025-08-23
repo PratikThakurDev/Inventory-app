@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { toast } from "react-toastify";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
 
 const ItemForm = ({ item, onSuccess, onCancel }) => {
   const [name, setName] = useState("");
@@ -29,7 +30,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axios.get(`${API_BASE_URL}/categories`);
         setCategories(res.data);
       } catch {
         toast.error("Failed to fetch categories");
@@ -62,7 +63,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
 
     try {
       if (item) {
-        await axios.put(`http://localhost:5000/api/items/${item.id}`, {
+        await axios.put(`${API_BASE_URL}/items/${item.id}`, {
           name,
           description,
           quantity: Number(quantity),
@@ -71,7 +72,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         });
         toast.success("Item updated!");
       } else {
-        await axios.post("http://localhost:5000/api/items", {
+        await axios.post(`${API_BASE_URL}/items`, {
           name,
           description,
           quantity: Number(quantity),
