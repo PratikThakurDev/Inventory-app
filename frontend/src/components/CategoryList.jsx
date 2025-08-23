@@ -25,7 +25,7 @@ const CategoryList = ({ onSelect, refreshToggle, onEdit }) => {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
+      const res = await axios.get(`${API_BASE_URL}/categories`);
       setCategories(res.data);
     } catch {
       toast.error("Failed to fetch categories");
