@@ -1,65 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const ItemForm = ({ onSuccess , refreshToggle }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+const ItemForm = ({ item, onSuccess, onCancel }) => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [price, setPrice] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch categories for the select dropdown
     const fetchCategories = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/categories');
+        const res = await axios.get("http://localhost:5000/api/categories");
         setCategories(res.data);
-      } catch (err) {
+      } catch {
         setCategories([]);
       }
     };
     fetchCategories();
-  }, [refreshToggle , categoryId]);
+  }, []);
+
+  useEffect(() => {
+    if (item) {
+      setName(item.name);
+      setDescription(item.description || "");
+      setQuantity(item.quantity);
+      setPrice(item.price);
+      setCategoryId(item.category_id);
+      setImageUrl(item.image_url || "");
+    } else {
+      setName("");
+      setDescription("");
+      setQuantity(1);
+      setPrice("");
+      setCategoryId("");
+      setImageUrl("");
+    }
+  }, [item]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      await axios.post('http://localhost:5000/api/items', {
-        name,
-        description,
-        quantity: Number(quantity),
-        price: Number(price),
-        category_id: Number(categoryId),
-        image_url: imageUrl
-      });
-      setName('');
-      setDescription('');
-      setQuantity(1);
-      setPrice('');
-      setCategoryId('');
-      setImageUrl('');
+      if (item) {
+        await axios.put(`http://localhost:5000/api/items/${item.id}`, {
+          name,
+          description,
+          quantity: Number(quantity),
+          price: Number(price),
+          category_id: Number(categoryId),
+          image_url: imageUrl,
+        });
+      } else {
+        await axios.post("http://localhost:5000/api/items", {
+          name,
+          description,
+          quantity: Number(quantity),
+          price: Number(price),
+          category_id: Number(categoryId),
+          image_url: imageUrl,
+        });
+      }
       if (onSuccess) onSuccess();
+      // Clear form after submit
+      if (!item) {
+        setName("");
+        setDescription("");
+        setQuantity(1);
+        setPrice("");
+        setCategoryId("");
+        setImageUrl("");
+      }
     } catch (err) {
-      setError('Failed to create item. Make sure the category is valid.');
+      setError("Failed to save item");
       console.error(err);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Add Item</h3>
+      <h3>{item ? "Edit Item" : "Add Item"}</h3>
       <div>
         <label>Name:</label>
-        <input value={name} required onChange={(e) => setName(e.target.value)} />
+        <input
+          value={name}
+          required
+          onChange={(e) => setName(e.target.value)}
+        />
       </div>
       <div>
         <label>Description:</label>
-        <input value={description} onChange={(e) => setDescription(e.target.value)} />
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </div>
       <div>
         <label>Quantity:</label>
@@ -84,10 +122,16 @@ const ItemForm = ({ onSuccess , refreshToggle }) => {
       </div>
       <div>
         <label>Category:</label>
-        <select value={categoryId} required onChange={(e) => setCategoryId(e.target.value)}>
+        <select
+          value={categoryId}
+          required
+          onChange={(e) => setCategoryId(e.target.value)}
+        >
           <option value="">Select...</option>
-          {categories.map(cat => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
           ))}
         </select>
       </div>
@@ -95,8 +139,13 @@ const ItemForm = ({ onSuccess , refreshToggle }) => {
         <label>Image URL:</label>
         <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button type="submit">Add Item</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <button type="submit">{item ? "Update" : "Add"}</button>
+      {item && (
+        <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>
+          Cancel
+        </button>
+      )}
     </form>
   );
 };
