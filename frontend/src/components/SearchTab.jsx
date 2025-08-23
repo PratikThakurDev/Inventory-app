@@ -17,38 +17,42 @@ const SearchTab = ({ onSelectCategory }) => {
   const [filterCategory, setFilterCategory] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Fetch categories once on mount
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/categories");
+        setCategories(res.data);
+      } catch {
+        setCategories([]);
+      }
+    };
     fetchCategories();
-    fetchItems();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/categories");
-      setCategories(res.data);
-    } catch {
-      setCategories([]);
-    }
-  };
-
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:5000/api/items");
-      setItems(res.data);
-    } catch {
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredItems = items.filter((item) => {
-    return (
-      item.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      (filterCategory === "" || item.category_id === Number(filterCategory))
-    );
-  });
+  // Fetch filtered items whenever filterCategory or searchText changes
+  useEffect(() => {
+    const fetchItems = async () => {
+      setLoading(true);
+      try {
+        let url = "http://localhost:5000/api/items";
+        if (filterCategory) {
+          url = `http://localhost:5000/api/items/category/${filterCategory}`;
+        }
+        const res = await axios.get(url);
+        // further filter results by search text client-side
+        const filtered = res.data.filter((item) =>
+          item.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setItems(filtered);
+      } catch {
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, [filterCategory, searchText]);
 
   return (
     <Box>
@@ -75,18 +79,23 @@ const SearchTab = ({ onSelectCategory }) => {
         <Flex justify="center">
           <Spinner size="lg" />
         </Flex>
-      ) : filteredItems.length === 0 ? (
+      ) : items.length === 0 ? (
         <Text>No items found.</Text>
       ) : (
         <SimpleGrid columns={[1, 2, 3]} spacing={4}>
-          {filteredItems.map((item) => (
+          {items.map((item) => (
             <Box
               key={item.id}
               p={4}
               borderWidth="1px"
               borderRadius="md"
               cursor="pointer"
-              _hover={{ bg: "gray.100" }}
+              _hover={{
+                bg: "gray.100",
+                color: "gray.800",
+                boxShadow: "md",
+                transition: "background-color 0.2s, color 0.2s",
+              }}
               onClick={() => onSelectCategory(item.category_id)}
             >
               <Text fontWeight="bold">{item.name}</Text>
