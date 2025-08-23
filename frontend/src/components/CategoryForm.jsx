@@ -8,6 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const CategoryForm = ({ category, onSuccess, onCancel }) => {
   const [name, setName] = useState("");
@@ -36,16 +37,19 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
           name,
           description,
         });
+        toast.success("Category updated!");
       } else {
         await axios.post("http://localhost:5000/api/categories", {
           name,
           description,
         });
+        toast.success("Category added!");
       }
       if (onSuccess) onSuccess();
       setName("");
       setDescription("");
     } catch {
+      toast.error("Failed to save category");
       setError("Failed to save category");
     } finally {
       setSubmitting(false);
@@ -56,6 +60,7 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
     <Box
       as="form"
       p={4}
+      mb={6}
       borderWidth="1px"
       borderRadius="md"
       onSubmit={handleSubmit}
@@ -84,7 +89,7 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
       </Button>
 
       {category && (
-        <Button onClick={onCancel} ml={4}>
+        <Button ml={4} onClick={onCancel} variant="outline">
           Cancel
         </Button>
       )}

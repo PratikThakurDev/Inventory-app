@@ -9,6 +9,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { ADMIN_PASSWORD } from "../config";
 
 const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
@@ -28,7 +29,7 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
       const res = await axios.get(url);
       setItems(res.data);
     } catch {
-      // handle error if needed
+      toast.error("Failed to fetch items");
     } finally {
       setLoading(false);
     }
@@ -49,8 +50,9 @@ const ItemList = ({ categoryId, refreshToggle, onEdit }) => {
       try {
         await axios.delete(`http://localhost:5000/api/items/${id}`);
         fetchItems();
+        toast.success("Item deleted!");
       } catch {
-        alert("Failed to delete item");
+        toast.error("Failed to delete item");
       }
     }
   };

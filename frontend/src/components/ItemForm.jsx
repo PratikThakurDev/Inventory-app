@@ -14,6 +14,7 @@ import {
   NumberDecrementStepper,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ItemForm = ({ item, onSuccess, onCancel }) => {
   const [name, setName] = useState("");
@@ -32,6 +33,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         const res = await axios.get("http://localhost:5000/api/categories");
         setCategories(res.data);
       } catch {
+        toast.error("Failed to fetch categories");
         setCategories([]);
       }
     };
@@ -71,6 +73,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
           category_id: Number(categoryId),
           image_url: imageUrl,
         });
+        toast.success("Item updated!");
       } else {
         await axios.post("http://localhost:5000/api/items", {
           name,
@@ -80,6 +83,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
           category_id: Number(categoryId),
           image_url: imageUrl,
         });
+        toast.success("Item added!");
       }
       if (onSuccess) onSuccess();
       if (!item) {
@@ -91,6 +95,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
         setImageUrl("");
       }
     } catch {
+      toast.error("Failed to save item");
       setError("Failed to save item");
     } finally {
       setSubmitting(false);
@@ -121,11 +126,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
 
       <FormControl mb={3} isRequired>
         <FormLabel>Quantity</FormLabel>
-        <NumberInput
-          min={1}
-          value={quantity}
-          onChange={(valueString) => setQuantity(valueString)}
-        >
+        <NumberInput min={1} value={quantity} onChange={setQuantity}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -136,12 +137,7 @@ const ItemForm = ({ item, onSuccess, onCancel }) => {
 
       <FormControl mb={3} isRequired>
         <FormLabel>Price</FormLabel>
-        <NumberInput
-          min={0}
-          precision={2}
-          value={price}
-          onChange={(valueString) => setPrice(valueString)}
-        >
+        <NumberInput min={0} precision={2} value={price} onChange={setPrice}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
