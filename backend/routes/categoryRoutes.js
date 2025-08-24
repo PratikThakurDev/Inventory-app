@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
   try {
     const { name, description } = req.body;
     const result = await pool.query(
-      "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *",
+       "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *",
       [name, description]
     );
     res.status(201).json(result.rows[0]);
@@ -51,7 +51,7 @@ router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { name, description } = req.body;
     const result = await pool.query(
-      "UPDATE categories SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *",
+      "UPDATE categories SET name = $1, description = $2 WHERE id = $3 RETURNING *",
       [name, description, id]
     );
     if (result.rows.length === 0) {

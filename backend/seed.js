@@ -151,10 +151,11 @@ async function seed() {
 
     for (const cat of categoriesData) {
       await pool.query(
-        `INSERT INTO categories (id, name, description) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING;`,
-        [cat.id, cat.name, cat.description]
+        `INSERT INTO categories (name, description) VALUES ($1, $2) ON CONFLICT (name) DO NOTHING;`,
+        [cat.name, cat.description]
       );
     }
+
     console.log("Seeded categories");
 
     const { rows: categories } = await pool.query(

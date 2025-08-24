@@ -1,9 +1,9 @@
 ### Create new category (POST)
-POST http://localhost:5000/api/categories
+POST https://inventory-app-arfv.onrender.com/api/categories
 Content-Type: application/json
 
 {
-  "name": "Smartphones",
+  "name": "TV",
   "description": "Mobile devices"
 }
 
@@ -14,7 +14,7 @@ GET http://localhost:5000/api/categories
 GET http://localhost:5000/api/categories/5
 
 ###Update category (PUT)
-PUT http://localhost:5000/api/categories/5
+PUT https://inventory-app-arfv.onrender.com/api/categories/5
 Content-Type: application/json
 
 {

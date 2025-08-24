@@ -66,7 +66,7 @@ router.put("/:id", async (req, res) => {
     const { name, description, quantity, price, category_id, image_url } =
       req.body;
     const result = await pool.query(
-      `UPDATE items SET name=$1, description=$2, quantity=$3, price=$4, category_id=$5, image_url=$6, updated_at=CURRENT_TIMESTAMP WHERE id=$7 RETURNING *`,
+      `UPDATE items SET name=$1, description=$2, quantity=$3, price=$4, category_id=$5, image_url=$6 WHERE id=$7 RETURNING *`,
       [name, description, quantity, price, category_id, image_url, id]
     );
     if (result.rows.length === 0) {
