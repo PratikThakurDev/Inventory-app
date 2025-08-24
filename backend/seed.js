@@ -142,6 +142,11 @@ async function seed() {
         name: "Sports Equipment",
         description: "Gear for various sports",
       },
+      {
+        id: 51,
+        name: "Home Appliances",
+        description: "Appliances for home use",
+      },
     ];
 
     for (const cat of categoriesData) {

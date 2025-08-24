@@ -10,6 +10,8 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
+
 const CategoryForm = ({ category, onSuccess, onCancel }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,13 +35,13 @@ const CategoryForm = ({ category, onSuccess, onCancel }) => {
 
     try {
       if (category) {
-        await axios.put(`http://localhost:5000/api/categories/${category.id}`, {
+        await axios.put(`${API_BASE_URL}/categories/${category.id}`, {
           name,
           description,
         });
         toast.success("Category updated!");
       } else {
-        await axios.post("http://localhost:5000/api/categories", {
+        await axios.post(`${API_BASE_URL}/categories`, {
           name,
           description,
         });
